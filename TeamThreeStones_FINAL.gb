@@ -1,0 +1,2625 @@
+func retHex(myHex, cource)
+local tmpPos
+#################################
+#cource→position 変換
+#引数 myHex(自分の位置),0:左上 1:右上 2:右 3:右下 4:左下 5:左 -1:無効
+#返値 array(ターゲットの位置)
+#################################
+#y位置が奇数のとき
+if (myHex[1]%2) == 1
+	if cource == 0
+		tmpPos[0] = myHex[0]-1
+		tmpPos[1] = myHex[1]-1
+		return tmpPos
+	endif
+	if cource == 1
+		tmpPos[0] = myHex[0]
+		tmpPos[1] = myHex[1]-1
+		return tmpPos
+	endif
+	if cource == 2
+		tmpPos[0] = myHex[0]+1
+		tmpPos[1] = myHex[1]
+		return tmpPos
+	endif
+	if cource == 3
+		tmpPos[0] = myHex[0]
+		tmpPos[1] = myHex[1]+1
+		return tmpPos
+	endif
+	if cource == 4
+		tmpPos[0] = myHex[0]-1
+		tmpPos[1] = myHex[1]+1
+		return tmpPos
+	endif
+	if cource == 5
+		tmpPos[0] = myHex[0]-1
+		tmpPos[1] = myHex[1]
+		return tmpPos
+	endif
+else
+	if cource == 0
+		tmpPos[0] = myHex[0]
+		tmpPos[1] = myHex[1]-1
+		return tmpPos
+	endif
+	if cource == 1
+		tmpPos[0] = myHex[0]+1
+		tmpPos[1] = myHex[1]-1
+		return tmpPos
+	endif
+	if cource == 2
+		tmpPos[0] = myHex[0]+1
+		tmpPos[1] = myHex[1]
+		return tmpPos
+	endif
+	if cource == 3
+		tmpPos[0] = myHex[0]+1
+		tmpPos[1] = myHex[1]+1
+		return tmpPos
+	endif
+	if cource == 4
+		tmpPos[0] = myHex[0]
+		tmpPos[1] = myHex[1]+1
+		return tmpPos
+	endif
+	if cource == 5
+		tmpPos[0] = myHex[0]-1
+		tmpPos[1] = myHex[1]
+		return tmpPos
+	endif
+endif
+
+	tmpPos[0] = -1
+	tmpPos[1] = -1
+	return tmpPos
+endfunc
+
+func retHexGate(myHex, cource)
+local tmpPos k atGate gateAxes
+#################################
+#cource→position 変換
+#引数 myHex(自分の位置),0:左上 1:右上 2:右 3:右下 4:左下 5:左 -1:無効
+#返値 array(ターゲットの位置)
+#################################
+k = 0
+atGate = 0
+while k < $GATES
+	if (GATES[k][0] == myHex[0]) & (GATES[k][1] == myHex[1])
+		atGate = 1
+	endif
+	k = k + 1
+endwhile
+
+#ゲートで無いとき
+if atGate != 1
+	#y位置が奇数のとき
+	if (myHex[1]%2) == 1
+		if cource == 0
+			tmpPos[0] = myHex[0]-1
+			tmpPos[1] = myHex[1]-1
+			return tmpPos
+		endif
+		if cource == 1
+			tmpPos[0] = myHex[0]
+			tmpPos[1] = myHex[1]-1
+			return tmpPos
+		endif
+		if cource == 2
+			tmpPos[0] = myHex[0]+1
+			tmpPos[1] = myHex[1]
+			return tmpPos
+		endif
+		if cource == 3
+			tmpPos[0] = myHex[0]
+			tmpPos[1] = myHex[1]+1
+			return tmpPos
+		endif
+		if cource == 4
+			tmpPos[0] = myHex[0]-1
+			tmpPos[1] = myHex[1]+1
+			return tmpPos
+		endif
+		if cource == 5
+			tmpPos[0] = myHex[0]-1
+			tmpPos[1] = myHex[1]
+			return tmpPos
+		endif
+	else	#yが偶数のとき
+		if cource == 0
+			tmpPos[0] = myHex[0]
+			tmpPos[1] = myHex[1]-1
+			return tmpPos
+		endif
+		if cource == 1
+			tmpPos[0] = myHex[0]+1
+			tmpPos[1] = myHex[1]-1
+			return tmpPos
+		endif
+		if cource == 2
+			tmpPos[0] = myHex[0]+1
+			tmpPos[1] = myHex[1]
+			return tmpPos
+		endif
+		if cource == 3
+			tmpPos[0] = myHex[0]+1
+			tmpPos[1] = myHex[1]+1
+			return tmpPos
+		endif
+		if cource == 4
+			tmpPos[0] = myHex[0]
+			tmpPos[1] = myHex[1]+1
+			return tmpPos
+		endif
+		if cource == 5
+			tmpPos[0] = myHex[0]-1
+			tmpPos[1] = myHex[1]
+			return tmpPos
+		endif
+	endif
+else	#ゲートのとき
+
+#ゲートの軸判定
+#x軸
+	if myHex[0] == 0
+		gateAxes[0] = 0			#左辺にゲートあり
+	else
+		#すでにゲート確定なのでy軸の偶奇数判定なし
+		if myHex[0] == (F_WIDTH-1) | myHex[0] == (F_WIDTH -2)
+			gateAxes[0] = 1		#右辺にゲートあり
+		else
+			gateAxes[0] = -1	#x軸にゲートなし
+		endif
+	endif
+#y軸
+	if myHex[1] == 0
+		gateAxes[1] = 0			#上辺にゲートあり
+	else
+		if myHex[1] == (F_HEIGHT-1)
+			gateAxes[1] = 1		#下辺にゲートあり
+		else
+			gateAxes[1] = -1	#y軸にゲートなし
+		endif
+	endif
+	#y位置が奇数のとき
+	if (myHex[1]%2) == 1
+		if cource == 0
+			if gateAxes[1] == 0
+				tmpPos[0] = myHex[0]
+				tmpPos[1] = F_HEIGHT - 1
+			else
+				tmpPos[0] = myHex[0]-1
+				tmpPos[1] = myHex[1]-1
+			endif
+			return tmpPos
+		endif
+		if cource == 1
+			if gateAxes[1] == 0
+				tmpPos[0] = myHex[0]
+				tmpPos[1] = F_HEIGHT -1
+			else
+				tmpPos[0] = myHex[0]
+				tmpPos[1] = myHex[1]-1
+			endif
+			return tmpPos
+		endif
+		if cource == 2
+			if gateAxes[0] == 1
+				tmpPos[0] = 0
+				tmpPos[1] = myHex[1]
+			else
+				tmpPos[0] = myHex[0]+1
+				tmpPos[1] = myHex[1]
+			endif
+			return tmpPos
+		endif
+		if cource == 3
+			if gateAxes[1] == 1
+				tmpPos[0] = myHex[0]
+				tmpPos[1] = 0
+			else
+				tmpPos[0] = myHex[0]
+				tmpPos[1] = myHex[1]+1
+			endif
+			return tmpPos
+		endif
+		if cource == 4
+			if gateAxes[1] == 1
+				tmpPos[0] = myHex[0]
+				tmpPos[0] = 0
+			else
+				tmpPos[0] = myHex[0]-1
+				tmpPos[1] = myHex[1]+1
+			endif
+			return tmpPos
+		endif
+		if cource == 5
+			if gateAxes[0] == 0
+				tmpPos[0] = F_WIDTH-1
+				tmpPos[1] = myHex[1]
+			else
+				tmpPos[0] = myHex[0]-1
+				tmpPos[1] = myHex[1]
+			endif
+			return tmpPos
+		endif
+	
+	else #y位置が偶数のとき
+		if cource == 0
+			if gateAxes[1] == 0
+				tmpPos[0] = myHex[0]
+				tmpPos[1] = F_HEIGHT-1
+			else
+				tmpPos[0] = myHex[0]
+				tmpPos[1] = myHex[1]-1
+			endif
+			return tmpPos
+		endif
+		if cource == 1
+			if gateAxes[1] == 0
+				tmpPos[0] = myHex[0]
+				tmpPos[1] = F_HEIGHT-1
+			else
+			tmpPos[0] = myHex[0]+1
+			tmpPos[1] = myHex[1]-1
+			endif
+			return tmpPos
+		endif
+		if cource == 2
+			if gateAxes[0] == 1
+				tmpPos[0] = 0
+				tmpPos[1] = myHex[1]
+			else
+				tmpPos[0] = myHex[0]+1
+				tmpPos[1] = myHex[1]
+			endif
+			return tmpPos
+		endif
+		if cource == 3
+			if gateAxes[1] == 1
+				tmpPos[0] = myHex[0]
+				tmpPos[1] = 0
+			else
+				tmpPos[0] = myHex[0]+1
+				tmpPos[1] = myHex[1]+1
+			endif
+			return tmpPos
+		endif
+		if cource == 4
+			if gateAxes[1] == 1
+				tmpPos[0] = myHex[0]
+				tmpPos[1] = 0
+			else
+				tmpPos[0] = myHex[0]
+				tmpPos[1] = myHex[1]+1
+			endif
+			return tmpPos
+		endif
+		if cource == 5
+			if gateAxes[0] == 0
+				tmpPos[0] = F_WIDTH-2
+				tmpPos[1] = myHex[1]
+			else
+				tmpPos[0] = myHex[0]-1
+				tmpPos[1] = myHex[1]
+			endif
+			return tmpPos
+		endif
+	endif
+endif
+	tmpPos[0] = -1
+	tmpPos[1] = -1
+	return tmpPos
+endfunc
+
+func calcDistance(p,q)
+  local dx dy
+#########################################
+#エージェント間の距離を測定
+#引数 p(hexcel1),q(hexcel2)
+#返値 総合的距離( >0)
+#######################################
+#絶対距離の合計を距離として算出する
+	dx = p[0] - q[0]
+	#絶対値変換
+	if dx < 0
+		dx = -dx
+	endif
+	dy = p[1] - q[1]
+	#絶対値変換
+	if dy < 0
+		dy = -dy
+	endif
+	return dx+dy
+endfunc
+
+func calcDistanceElement(p,q)
+  local dx dy dis
+#########################################
+#エージェント間の距離を測定
+#要素ごとの距離を返す。
+#引数 p(hexcel1),q(hexcel2)
+#返値 dis[2] 0:x_dis 1:y_dis
+#######################################
+#絶対距離の合計を距離として算出する
+	dx = p[0] - q[0]
+	#絶対値変換
+	if dx < 0
+		dx = -dx
+	endif
+	dy = p[1] - q[1]
+	#絶対値変換
+	if dy < 0
+		dy = -dy
+	endif
+	dis[0] = dx
+	dis[1] = dy
+	return dis
+endfunc
+
+func outOfField(p)
+  local x y
+#########################################
+#フィールドの範囲外であるか判定
+#引数 p
+#返値 1:範囲外 0:範囲内 -1:エラー
+#######################################
+#フィールド外指定があったとき
+x = p[0]
+y = p[1]
+#(widht-1,yの偶数座標)は存在しない
+if (x < 0) | (x >= F_WIDTH) | ((x >= F_WIDTH - 1) & ((y & 1) == 0))
+ 	return 1
+else
+	if (y < 0) | (y >= F_HEIGHT)
+   		return 1
+	else
+		return 0
+	endif
+endif
+
+return -1
+
+endfunc
+
+func courceDecide(stayP,targetP)
+local cource
+#########################################
+#ターゲットまでの方向を返す
+#引数 stayP(開始位置) targetP(目標位置)
+#返値 各方向候補
+#######################################
+#初期化
+k = 0
+while k < 6
+	cource[k] = MIN_POINT
+	k = k + 1
+endwhile
+
+if (stayP[1]%2) == 0	#y座標が偶数か
+	if stayP[0] == targetP[0]	#x座標が一致
+		if stayP[1] == targetP[1] #y座標一致
+			return cource
+		else
+			if stayP[1] < targetP[1]
+				cource[4] = MAX_POINT
+				cource[3] = MIDDLE_POINT
+				cource[5] = MIDDLE_POINT
+				return cource
+			else
+				if stayP[1] > targetP[1]
+					cource[0] = MAX_POINT
+					cource[1] = MIDDLE_POINT
+					cource[5] = MIDDLE_POINT
+					return cource
+				endif
+			endif
+		endif
+	else
+		if stayP[0] < targetP[0]	#現在X<目標X
+			if stayP[1] == targetP[1]
+				cource[2] = MAX_POINT
+				cource[1] = MIDDLE_POINT
+				cource[3] = MIDDLE_POINT
+				return cource
+			else
+				if stayP[1] < targetP[1]
+					cource[3] = MAX_POINT
+					cource[2] = MIDDLE_POINT
+					cource[4] = MIDDLE_POINT
+					return cource
+				else
+					cource[1] = MAX_POINT
+					cource[2] = MIDDLE_POINT
+					cource[0] = MIDDLE_POINT
+					return cource
+				endif
+			endif
+		else						#現在X>目標X
+			if stayP[1] == targetP[1]
+				cource[5] = MAX_POINT
+				cource[4] = MIDDLE_POINT
+				cource[0] = MIDDLE_POINT
+				return cource
+			else
+				if stayP[1] < targetP[1]
+					#直線方向にない
+					cource[5] = MAX_POINT
+					cource[4] = MAX_POINT
+					return cource
+				else
+					#直線方向にない
+					cource[0] = MAX_POINT
+					cource[5] = MAX_POINT
+					return cource
+				endif
+			endif
+		endif
+	endif
+else							#x座標が奇数
+	if stayP[0] == targetP[0]	#x座標が一致
+		if stayP[1] == targetP[1] #y座標一致
+			return cource
+		else
+			if stayP[1] < targetP[1]
+				cource[3] = MAX_POINT
+				cource[2] = MIDDLE_POINT
+				cource[4] = MIDDLE_POINT
+				return cource
+			else
+				if stayP[1] > targetP[1]
+					cource[1] = MAX_POINT
+					cource[0] = MIDDLE_POINT
+					cource[2] = MIDDLE_POINT
+					return cource
+				endif
+			endif
+		endif
+	else
+		if stayP[0] < targetP[0]	#現在X<目標X
+			if stayP[1] == targetP[1]
+				cource[2] = MAX_POINT
+				cource[1] = MIDDLE_POINT
+				cource[3] = MIDDLE_POINT
+				return cource
+			else
+				if stayP[1] < targetP[1]
+					#直線方向にない
+					cource[2] = MAX_POINT
+					cource[3] = MAX_POINT
+					return cource
+				else
+					cource[1] = MAX_POINT
+					cource[2] = MAX_POINT
+					return cource
+				endif
+			endif
+		else						#現在X>目標X
+			if stayP[1] == targetP[1]
+				cource[5] = MAX_POINT
+				cource[4] = MIDDLE_POINT
+				cource[0] = MIDDLE_POINT
+				return cource
+			else
+				if stayP[1] < targetP[1]
+					cource[4] = MAX_POINT
+					cource[3] = MIDDLE_POINT
+					cource[5] = MIDDLE_POINT
+					return cource
+				else
+					cource[0] = MAX_POINT
+					cource[5] = MIDDLE_POINT
+					cource[1] = MIDDLE_POINT
+					return cource
+				endif
+			endif
+		endif
+	endif
+endif
+endfunc
+
+func freezCheck()
+local k
+#########################################
+#フリーズしているエージェントの位置をあらかじめ
+#競合チェック中に入れておく
+#引数:なし
+#返値:なし
+#######################################
+k = 0
+while k < 4
+	if gb_agent_status(TEAM,k) == 1
+		NGPos[NGPosNum] = pos[TEAM][k]
+		NGPosNum = NGPosNum + 1
+	endif
+	k = k + 1
+endwhile
+
+endfunc
+
+func freezCount()
+local k
+#####################################
+#フリーズカウンタの更新
+#引数:なし
+#返値:なし
+####################################
+k = 0
+while k < 4
+	if gb_agent_status(TEAM,k) == 1	#フリーズ状態
+		if KAM[k+19] == -1	#前々回フリーズ状態
+			KAM[k+15] = KAM[k+15] + 1
+		else
+			KAM[k+15] = 1
+		endif
+	endif
+	k = k + 1
+endwhile
+
+endfunc
+
+func initHashMap()
+local k fieldSize
+#########################################
+#ハッシュMap初期化
+#返値 ハッシュ値
+#######################################
+ fieldSize = F_WIDTH * F_HEIGHT
+ k = 0
+ 
+ #myHexcelMapクリア
+ while k < 1000
+ 	myHexcelMap[k] = 0
+ 	k = k + 1
+ endwhile
+
+ #myHexcelMap2クリア
+ if fieldSize >= 1000
+ k = 0
+ 	while k <1000
+ 		myHexcelMap2[k] = 0
+ 		k = k + 1
+ 	endwhile
+ else	#myHexcelMap2が必要でなければ終了
+ 	return 0
+ endif
+ 
+ #myHexcelMap3クリア
+ if filedSize >= 2000
+ k = 0
+ 	while k <1000
+ 		myHexcelMap3[k] = 0
+ 		k = k + 1
+ 	endwhile
+ else	#myHexcelMap3が必要でなければ終了
+ 	return 0
+ endif
+
+ #myHexcelMap4クリア
+ if filedSize >= 3000
+ k = 0
+ 	while k <1000
+ 		myHexcelMap4[k] = 0
+ 		k = k + 1
+ 	endwhile
+ else	#myHexcelMap4が必要でなければ終了
+ 	return 0
+ endif
+ 
+ return -1
+ 
+endfunc
+
+func createHash(p)
+local hashValue
+#########################################
+#ハッシュ値生成
+#引数 position,[0]:x [1]:y
+#返値 ハッシュ値
+#######################################
+	hashValue = (y*F_WIDTH) + x
+	return hashValue
+endfunc
+
+func addHashMap(hashValue)
+#########################################
+#ハッシュに該当するマップを存在有に
+#引数 ハッシュ値
+#返値 ハッシュ値
+#######################################
+	if hashValue < 1000
+		myHexcelMap[hashValue] = 1
+	elif hashValue < 2000
+		myHexcelMap2[hashValue-1000] = 1
+	elif hashValue < 3000
+		myHexcelMap3[hashValue-2000] = 1
+	elif hashValue < 4000
+		myHexcelMap4[hashValue-3000] = 1
+	endif
+endfunc
+
+func countHexcel()
+local k j tmp tmpHex teamHexcel max cnt
+#########################################
+#現在の領地を探索し領地数と順位をKAMに格納
+#引数 なし
+#返値 なし
+#KAM[23]:自分の領地数
+#KAM[24]:相手の領地数A(MAX)
+#KAM[25]:相手の領地数B
+#KAM[26]:相手の領地数C(MIN)
+#KAM[27]:自分の順位
+#KAM[28]:Aのチームindex
+#KAM[29]:Bのチームindex
+#KAM[30]:Cのチームindex
+#######################################
+k = 0
+while k < F_HEIGHT	#領地数算出
+	j = 0
+	while j < F_WIDTH
+		tmp = gb_hexel_owner(j,k)
+		if (tmp < 4) & (tmp >= 0)
+			teamHexcel[tmp] = teamHexcel[tmp] + 1
+		endif
+		j = j + 1
+	endwhile
+	k = k + 1
+endwhile
+
+KAM[23] = teamHexcel[TEAM]	#自分の領地数
+
+min = F_HEIGHT*F_WIDTH
+max = 0
+
+#初期化
+k = 0
+while k < 4
+	tmpHex[k] = teamHexcel[k]
+	k = k + 1
+endwhile
+
+#ソート
+k = 0
+while k < 3
+	j = k + 1
+	while j < 4
+		if tmpHex[k] < tmpHex[j]
+			max = tmpHex[j]
+			tmpHex[j] = tmpHex[k]
+			tmpHex[k] = max
+		endif
+		j = j + 1
+	endwhile
+	k = k + 1
+endwhile
+
+#順位判定
+k = 0
+cnt = 0
+while k < 4
+	j = 0
+	while j < 4
+		if tmpHex[k] == teamHexcel[j]
+			if j == TEAM
+				KAM[27] = k+1	#自分の順位(TOPが0位の為+1)
+			else
+				KAM[24+cnt] = teamHexcel[j]	#敵の領地数
+				KAM[28+cnt] = j				#敵のチームindex
+				cnt = cnt + 1
+			endif
+			break
+		endif
+		j = j + 1
+	endwhile
+	k = k + 1
+endwhile
+
+endfunc
+
+
+func judgeMyAgentDist(agent,dp)
+  local k j tmpPos tmpDist preTmpDist point
+#########################################
+#(A)(a)自エージェントとの位置判定
+#引数 agentID,方向Posデータ
+#返値 MA_DIST[agent][k] k:方向
+#######################################
+k = 0
+while k < COURCE_SIZE
+	tmpPos = dp[k]
+	#フィールド外指定があったとき
+	if (tmpPos[0] == -1) | (tmpPos[1] == -1)
+		k = k + 1
+		continue
+	endif
+	j = 0
+	point = 0
+	while j < 4
+		if j == agent
+			j = j + 1
+			continue
+		endif
+		tmpDist = calcDistance(tmpPos,pos[TEAM][j])
+		preTmpDist = calcDistance(pos[TEAM][agent],pos[TEAM][j])
+		if(tmpDist - preTmpDist) > 0 #遠ざかった
+			point = point + 1
+		else
+			if (tmpDist - preTmpDist) < 0 #近づいた
+				point = point - 1
+			endif
+		endif
+		j = j + 1
+	endwhile
+	if point > 2				#総合的に遠ざかった
+		MA_DIST[agent][k] = MAX_POINT
+	else
+		if point < 0 			#総合的に近づいた
+			MA_DIST[agent][k] = MIN_POINT
+		else						#変化なし
+			MA_DIST[agent][k] = MIDDLE_POINT
+		endif
+	endif
+	k = k + 1
+endwhile
+
+endfunc
+
+func judgeDogAvoid(agent,dp)
+  local k j tmpPos flg
+#########################################
+#(B)犬脅し避け判定
+#引数 agentID,方向Posデータ
+#返値 DOG_AVOID[agent][k] k:方向
+#######################################
+k = 0
+while k < COURCE_SIZE
+	tmpPos = dp[k]
+	#フィールド外指定があったとき
+	if (tmpPos[0] == -1) | (tmpPos[1] == -1)
+		k = k + 1
+		continue
+	endif
+	j = 0
+	flg = 0
+	while j < 4
+		if j == TEAM
+			j = j + 1
+			continue
+		endif
+		tmpDist = calcDistanceElement(tmpPos,pos[j][0])
+		if (tmpDist[0] < 3) & (tmpDist[1] < 3) 		#犬脅し近し
+			flg = 1
+			break
+		endif
+		j = j + 1
+	endwhile
+	if flg == 1	
+		DOG_AVOID[agent][k] = MIN_POINT
+	else
+		DOG_AVOID[agent][k] = MAX_POINT
+	endif
+	k = k + 1
+endwhile
+
+endfunc
+
+func judgeOwner(agent,dp)
+  local k tmpPos
+#########################################
+#(C)自ノード所有判定
+#引数 agentID,方向Posデータ
+#返値 OWNER[agent][k] k:方向
+#MAX_POINT:自ノード所有でない MIN:所有
+#######################################
+k = 0
+while k < COURCE_SIZE
+	tmpPos = dp[k]
+	#フィールド外指定があったとき
+	if (tmpPos[0] == -1) | (tmpPos[1] == -1)
+		k = k + 1
+		continue
+	endif
+	#自分の所有する土地でないか
+	if gb_hexel_owner(tmpPos[0],tmpPos[1]) != TEAM
+		OWNER[agent][k] = MAX_POINT
+	else
+		OWNER[agent][k] = MIN_POINT
+	endif
+	k = k + 1
+endwhile
+endfunc
+
+func judgeNgPos(agent,dp)
+	local k tmpPos flg
+########################################
+#(D)エージェントの予約行動競合チェック関数
+#引数:agent 方向Posデータ
+#返値:COMPE[agent][k] k:方向 val:競合可否
+########################################
+k = 0
+while k < COURCE_SIZE
+	tmpPos = dp[k]
+	#フィールド外指定があったとき
+	if (tmpPos[0] == -1) | (tmpPos[1] == -1)
+		COMPE[agent][k] = MIN_POINT
+		k = k + 1
+		continue
+	endif
+	j = 0
+
+	if NGPosNum == 0	#予約行動がないとき
+		COMPE[agent][k] = MAX_POINT
+		k = k + 1
+		continue
+	endif
+	flg = 0
+	while j < NGPosNum
+		if (NGPos[j][0] == tmpPos[0]) & (NGPos[j][1] == tmpPos[1])
+			flg = 1
+		endif
+		j = j + 1
+	endwhile
+	if flg == 1
+		COMPE[agent][k] = MIN_POINT
+	else
+		COMPE[agent][k] = MAX_POINT
+	endif
+	k = k + 1
+endwhile
+
+endfunc
+
+func judgeoutOfField(agent,dp)
+  local x y k tmpPos
+#########################################
+#(E)フィールドの範囲外であるか判定
+#引数agent, dp 方向Posデータ
+#返値 FIELD[agent][k] k:方向 val:範囲外可否
+#######################################
+k= 0
+while k < COURCE_SIZE
+	tmpPos = dp[k]
+	#フィールド外指定があったとき
+	if (tmpPos[0] == -1) | (tmpPos[1] == -1)
+		FIELD[agent][k] = MIN_POINT
+		k = k + 1
+		continue
+	endif
+  	x = tmpPos[0]
+  	y = tmpPos[1]
+	#(widht-1,yの偶数座標)は存在しない
+  	if (x < 0) | (x >= F_WIDTH) | ((x >= F_WIDTH - 1) & ((y & 1) == 0))
+    	FIELD[agent][k] = MIN_POINT
+  	else
+  		if (y < 0) | (y >= F_HEIGHT)
+   			FIELD[agent][k] = MIN_POINT
+		else
+			FIELD[agent][k] = MAX_POINT
+		endif
+  	endif
+  	k = k + 1
+endwhile
+
+endfunc
+
+func judgeWrap2(agent,dp)
+	local k tmpPos point
+########################################
+#(M)包含可能性チェック2(大陸横断込)
+#引数:agent,dp 方向Posデータl
+#返値:WRAP2[agent][k] k:方向 1:あり 0:なし
+########################################
+k = 0
+while k < COURCE_SIZE
+	tmpPos = dp[k]
+	point = 0
+	#フィールド外指定があったとき
+	if (tmpPos[0] == -1) | (tmpPos[1] == -1)
+		k = k + 1
+		continue
+	endif
+	if gb_hexel_owner(tmpPos[0],tmpPos[1]) != TEAM
+		while 1
+			tmpPos = retHex(tmpPos,k)
+			if gb_hexel_owner(tmpPos[0],tmpPos[1]) == TEAM
+				break
+			endif
+			if outOfField(tmpPos) == 1
+				break
+			endif
+			point = point + 1
+		endwhile
+		if point > 0 & point < 6
+			WRAP2[agent][k] = MAX_POINT
+		else
+			if point >=6
+				WRAP2[agent][k] = MIDDLE_POINT
+			else
+				WRAP2[agent][k] = MIN_POINT
+			endif
+		endif
+	endif
+	k = k + 1
+endwhile
+
+endfunc
+
+func judgeEnemyDist(agent,dp)
+  local k j i tmpPos preTmpDist tmpSum
+#########################################
+#(H)敵侍との位置判定
+#引数 agentID,方向Posデータ
+#返値 ENE_DIST[agent][k] k:方向
+#MAX_POINT:敵と遠ざかる MIN_POINT:敵に近づく
+#######################################
+k = 0
+while k < COURCE_SIZE
+	tmpPos = dp[k]
+	#フィールド外指定があったとき
+	if (tmpPos[0] == -1) | (tmpPos[1] == -1)
+		k = k + 1
+		continue
+	endif
+	i = 0
+	j = 1
+	tmpSum = 0
+	while i < 4
+		if i == TEAM
+			i = i + 1
+			continue
+		endif
+		while j < 4
+			tmpDist = calcDistance(tmpPos,pos[i][j])
+			preTmpDist = calcDistance(pos[TEAM][agent],pos[i][j])
+			tmpSum = tmpSum + (tmpDist - preTmpDist)
+			j = j + 1
+		endwhile
+		j = 1
+		i = i + 1
+	endwhile
+	if tmpSum > 0 #総合的に遠ざかった
+		ENE_DIST[agent][k] = MAX_POINT
+	else
+		if tmpSum < 0 #総合的に近づいた
+			ENE_DIST[agent][k] = MIN_POINT
+		else
+			ENE_DIST[agent][k] = MIDDLE_POINT
+		endif
+	endif
+	k = k + 1
+endwhile
+
+endfunc
+
+func judgeCourceOwner(agent,dp)
+	local k tmpPos tmpVal
+########################################
+#(I)移動方向所有者チェック
+#引数:agent,dp 方向Posデータl
+#返値:COURCE_OWNER[agent][k] k:方向 1:あり 0:なし
+########################################
+k = 0
+sumVal = 0
+while k < COURCE_SIZE
+	tmpPos = dp[k]
+	tmpVal[k] = 0
+	#フィールド外指定があったとき
+	if (tmpPos[0] == -1) | (tmpPos[1] == -1)
+		k = k + 1
+		continue
+	endif
+	while 1
+		tmpPos = retHex(tmpPos,k)#更新
+		if outOfField(tmpPos) == 1
+			break
+		endif
+		if gb_hexel_owner(tmpPos[0],tmpPos[1]) != TEAM
+			tmpVal[k] = tmpVal[k] + 1
+		endif
+	endwhile
+	sumVal = sumVal + tmpVal[k]
+	k = k + 1
+endwhile
+#平均をとり、相手の陣地が多い上位3方向をMAXとする
+aveVal = sumVal/(COURCE_SIZE)
+k = 0
+while k < COURCE_SIZE
+	if tmpVal[k] > aveVal
+		COURCE_OWNER[agent][k] = MAX_POINT
+	else
+		COURCE_OWNER[agent][k] = MIN_POINT
+	endif
+	k = k + 1
+endwhile
+
+endfunc
+func judgeNeighborEnemy(agent,dp)
+	local k tmpPos i j enemyPos flg
+########################################
+#(J)隣接エージェント回避チェック
+#引数:agent,dp 方向Posデータl
+#返値:NEIGHBOR[agent][k] k:方向 1:あり 0:なし
+########################################
+k = 0
+while k < COURCE_SIZE
+	NEIGHBOR[agent][k] = MIDDLE_POINT
+	k = k + 1
+endwhile
+
+k=0
+while k < COURCE_SIZE
+	tmpPos = dp[k]
+	i = 0
+	j = 0
+	flg = 0
+	while i < 4 #Team
+		if i == TEAM
+			i = i + 1
+			j = 0
+			continue
+		endif
+		while j < 4 #Agent
+			enemyPos = pos[i][j]
+			if(tmpPos[0] == enemyPos[0]) & (tmpPos[1] == enemyPos[1])
+				flg = 1
+				break
+			endif
+			j = j + 1
+		endwhile
+		if flg == 1
+			break
+		endif
+		i = i + 1
+		j = 0
+	endwhile
+	if flg == 1
+		NEIGHBOR[agent][k] = MIN_POINT
+		#隣接する方向も評価を下げる
+		if NEIGHBOR[agent][(k+1)%6] > MIDDLE_POINT
+			NEIGHBOR[agent][(k+1)%6] = MIDDLE_POINT
+		endif
+		if NEIGHBOR[agent][(k+5)%6] > MIDDLE_POINT
+			NEIGHBOR[agent][(k+5)%6] = MIDDLE_POINT
+		endif
+	else
+		NEIGHBOR[agent][k] = MAX_POINT
+	endif
+	k = k + 1
+endwhile
+endfunc
+
+func judgeNeighborEnemy2(agent,dp)
+	local k tmpPos i j enemyPos flg dis
+########################################
+#(N)隣接エージェント回避チェック2
+#引数:agent,dp 方向Posデータl
+#返値:NEIGHBOR2[agent][k] k:方向 1:あり 0:なし
+########################################
+k=0
+while k < COURCE_SIZE
+	tmpPos = dp[k]
+	i = 0
+	j = 0
+	flg = 0
+	while i < 4 #Team
+		if i == TEAM
+			i = i + 1
+			j = 0
+			continue
+		endif
+		while j < 4 #Agent
+			enemyPos = pos[i][j]
+			dis = calcDistanceElement(tmpPos,enemyPos)
+			if (dis[0] < 2) & (dis[1] < 2)	#xかつyが敵から1マス以内
+				flg = 1
+				break
+			endif
+			j = j + 1
+		endwhile
+		if flg > 0
+			break
+		endif
+		i = i + 1
+		j = 0
+	endwhile
+
+	if flg == 1
+		NEIGHBOR2[agent][k] = MIN_POINT
+	else
+		NEIGHBOR2[agent][k] = MAX_POINT
+	endif
+	k = k + 1
+endwhile
+
+endfunc
+
+func judgeRepeat(agent,dp)
+local index k
+########################################
+#(K)(k)前回行動繰り返しチェック
+#引数:agent,dp 方向Posデータl
+#返値:REPEAT[agent][k] k:方向 1:あり 0:なし
+########################################
+#KAMの前回方向INDEX
+index = agent*3+1
+preCource = KAM[index]
+
+k = 0
+while k < 6
+	REPEAT[agent][k] = MAX_POINT
+	k = k + 1
+endwhile
+#前回の方向と逆方向(元の位置に戻る)はMIN_POINT
+REPEAT[agent][(preCource+3)%6] = MIN_POINT
+
+endfunc
+
+func judgeEnemyOwnerDist(agent,dp)
+local cnt k minCnt
+########################################
+#(O)敵(空き)の陣地までの距離
+#引数:agent,dp 方向Posデータl
+#返値:RANGE[agent][k] k:方向 1:あり 0:なし
+########################################
+
+k = 0
+while k < 6
+	RANGE[agent][k] = MIN_POINT
+	cnt[k] = 0
+	k = k + 1
+endwhile
+
+k = 0
+minCnt =999999
+while k < 6
+	tmpPos = dp[k]
+	while 1
+		if gb_hexel_owner(tmpPos[0],tmpPos[1]) != TEAM	#自分の土地でない
+			if outOfField(tmpPos) == 1 #範囲外
+				cnt[k] = 999999
+			endif
+			break
+		else
+			cnt[k] = cnt[k] + 1
+			if minCnt < cnt[k]
+				break
+			endif
+			tmpPos = retHexGate(tmpPos,k)
+		endif
+	endwhile
+	if minCnt > cnt[k]
+		minCnt = cnt[k]
+	endif
+	k = k + 1
+endwhile
+
+#最少距離の方向探索
+k = 0
+while k < 6
+	if minCnt == cnt[k]
+		RANGE[agent][k] = MAX_POINT
+	endif
+	k = k + 1
+endwhile
+
+endfunc
+
+func judgeDogOdoshi(agent,dp)
+local k j i flg tmpPos
+##########################################
+#(P)犬脅し回避判定
+#引数 agent,dp(方向データ)
+#返値 DOG_ODOSHI[agent][k]
+#########################################
+k = 0
+while k < COURCE_SIZE
+	DOG_ODOSHI[agent][k] = MAX_POINT
+	k = k + 1
+endwhile 
+
+#初回ターンは無視
+if KAM[0] != TURN
+	k = 0
+	while k < COURCE_SIZE
+		tmpPos = dp[k]
+		i = 0
+		flg = 0
+		j = 0
+		while i < 3
+			if (PrvDogPos[i][0][0] == tmpPos[0]) & (PrvDogPos[i][0][1] == tmpPos[1])
+				DOG_ODOSHI[agent][k] = MIN_POINT
+				break
+			endif
+			j = 0
+			while j < COURCE_SIZE
+				#犬の六方向もしくは犬の位置か
+				if (AgentDOG[i][j][0] == tmpPos[0]) & (AgentDOG[i][j][1] == tmpPos[1] )
+					DOG_ODOSHI[agent][k] = MIN_POINT
+					flg = 1
+					break
+				endif
+				j = j + 1
+			endwhile
+
+			i = i + 1
+			if flg == 1
+				break
+			endif
+		endwhile
+		k = k + 1
+	endwhile
+endif
+endfunc
+
+func judgeHouiCheck(agent,dp)
+local k j ret tmp flg i tmpPos
+##########################################
+#(Q)包囲チェック
+#引数 agent,dp(方向データ)
+#返値 HOUI[agent][k]
+#########################################
+k=0
+while k < COURCE_SIZE
+	tmpPos = dp[k]
+#自分の領地でないか
+	if gb_hexel_owner(tmpPos[0],tmpPos[1]) == TEAM
+		HOUI[agent][k] = MIN_POINT
+		k = k + 1
+		continue
+	endif
+#連結成立チェック 入力方向に連結があるか
+	j = 5
+	while j < 8
+		tmp = retHex(tmpPos,(k+j)%6)
+		if gb_hexel_owner(tmp[0],tmp[1]) == TEAM
+			break
+		endif
+		j = j + 1
+	endwhile
+#連結が見つからなかったとき
+	if j >= 8
+		HOUI[agent][k] = MIN_POINT
+		k = k + 1
+		continue
+	endif
+
+#再帰による探索
+#探索する場所検索
+	i = 0
+	flg = 0
+	while i < COURCE_SIZE
+		tmp = retHex(tmpPos,i)
+		if gb_hexel_owner(tmp[0],tmp[1]) == TEAM
+			i = i + 1
+			flg = 0
+			continue
+		else
+			if flg != 0
+				i = i + 1
+				continue
+			endif
+			flg = 1
+			HouiRecCnt = 0
+			HoiCnt = 0
+			HoiHexcelMap[HoiCnt] = tmp
+			HoiCnt = 1
+			ret = searchHouiCheck(tmp,tmpPos)
+			#各方向での包囲をカウント(1方向だけが包囲とかぎらない)
+			if ret == -1
+				HOUI[agent][k] = HOUI[agent][k] + MIN_POINT
+			elif ret == 0
+				HOUI[agent][k] = HOUI[agent][k] + HoiCnt
+			endif
+		endif
+		i = i + 1
+	endwhile
+	k = k + 1
+endwhile
+
+#評価値整形
+k = 0
+#10以上はMAX_POINTとする
+while k < COURCE_SIZE
+	if HOUI[agent][k] > 10
+		HOUI[agent][k] = MAX_POINT
+	endif
+	k = k + 1
+endwhile
+
+endfunc
+	
+func searchHouiCheck(p,ori)
+	local i j tmpPos hexStack stackSize
+#########################################
+#包囲判定用再帰関数
+#引数 p 判定位置
+#返値 -1:包囲なし 0:自チームセル
+#######################################
+i=0
+j=0
+stackSize = 0
+#再帰カウンタ更新
+HouiRecCnt = HouiRecCnt + 1
+while i < COURCE_SIZE
+	tmpPos = retHex(p, i)
+	#移動予定地だったら
+	if (tmpPos[0] == ori[0]) & (tmpPos[1] == ori[1])
+		i = i + 1
+		continue
+	endif
+	#範囲外か
+	if outOfField(tmpPos) == 1
+		
+		return -1
+	endif
+	#自分の所有Hexcelだったら
+	if gb_hexel_owner(tmpPos[0],tmpPos[1]) == TEAM
+		i = i + 1
+		continue
+	else
+		#未チェックか
+		j = 0
+		while j < HoiCnt
+			if (HoiHexcelMap[j][0] == tmpPos[0]) & (HoiHexcelMap[j][1] == tmpPos[1])
+				break
+			endif
+			j = j + 1
+		endwhile
+		if  j < HoiCnt
+			i = i + 1
+			continue
+		endif
+		#MAPに追加
+		HoiHexcelMap[HoiCnt] = tmpPos
+		HoiCnt = HoiCnt + 1
+		#スタックに追加
+		hexStack[stackSize] = tmpPos
+		stackSize = stackSize + 1
+		i = i + 1
+	endif
+endwhile
+
+#再帰呼び出し
+i=stackSize - 1
+while i >= 0
+	#再帰的に呼び出す
+	if HouiRecCnt < 20 #再帰が20階層までいったら、包囲は無いと判断
+		tmp = searchHouiCheck(hexStack[i],ori)
+		if tmp == -1
+			return -1
+		endif
+	else
+		return -1
+	endif
+	i = i - 1
+endwhile
+	HouiRecCnt = HouiRecCnt - 1
+	return 0
+endfunc
+
+func judgeTransTerritory(p)
+local i cost tmp k decided costMax t_agent tmpHash tranFlg tranFlg2
+#########################################
+#大陸横断判定
+#引数 p(侍の位置)侍の位置は自分の土地である
+#tranFlg : 端につなげることが可能
+#tranFlg2 : 大陸横断リーチ
+#返値 なし
+#######################################
+
+max_x = p[0]
+min_x = p[0]
+max_y = p[1]
+min_y = p[1]
+###########################
+#LIMIT_AREA[0] :MIN_X_P
+#LIMIT_AREA[1] :MAX_X_P
+#LIMIT_AREA[2] :MIN_Y_P
+#LIMIT_AREA[3] :MAX_Y_P
+###########################
+LIMIT_AREA[0] = p
+LIMIT_AREA[1] = p
+LIMIT_AREA[2] = p
+LIMIT_AREA[3] = p
+
+jTTcounter = 0
+RecursionCnt = 0
+RecStacSize = 0
+
+#MAPに追加
+#Hash:(y*F_WIDTH+x) 1:有 0:無
+tmpHash = createHash(p)
+addHashMap(tmpHash)
+#自軍領土カウンタ
+jTTcounter = jTTcounter + 1
+
+#再帰関数呼び出し
+tmp = searchHexcel(p)
+
+#再帰制限オーバー再探索
+RecursionCnt = 0
+k = 0
+while k < RecStacSize
+	tmp = searchHexcel(RecStac[k])
+	k = k + 1
+endwhile
+
+#MAX_xP,MIN_xP,MAX_yP,MIN_yPを生成
+AREA = jTTcounter
+
+#DEFINE_NUMBER
+FAIL = -1
+LEACH = 1
+TOUCH = 2
+
+#端接地チェック
+if LIMIT_AREA[0][0] == 0 #x=0に接する
+	tranFlg[0] = TOUCH
+endif
+if LIMIT_AREA[1][0] == F_WIDTH	#x=WIDTHに接する
+	tranFlg[1] = TOUCH
+endif
+if LIMIT_AREA[2][1] == 0	#y=0に接する
+	tranFlg[2] = TOUCH
+endif
+if LIMIT_AREA[3][0] == 0	#y=HEIGHTに接する
+	tranFlg[3] = TOUCH
+endif
+
+#大陸横断リーチか
+#一端が端に接していた時、リーチとする。
+if tranFlg[0] == TOUCH
+	if LIMIT_AREA[1][0] > (F_WIDTH-REST2)
+		tranFlg2[1] = LEACH
+	endif
+endif
+if tranFlg[1] == TOUCH
+	if LIMIT_AREA[0][0] < REST2
+		tranFlg2[0] = LEACH
+	endif
+endif
+if tranFlg[2] == TOUCH
+	if LIMIT_AREA[3][1] < (F_HEIGHT-REST2)
+		tranFlg2[3] = LEACH
+	endif
+endif
+if tranFlg[3] == TOUCH
+	if LIMIT_AREA[2][1] < REST2
+		tranFlg2[2] = LEACH
+	endif
+endif
+
+#閾値以内で大陸横断できるか
+#X_MIN
+if tranFlg[0] != TOUCH
+	if LIMIT_AREA[0][0] < REST
+		tranFlg[0] = LEACH
+		LIMIT_AREA[0][0] = LIMIT_AREA[0][0] -1	#移動目標に変更
+	else
+		tranFlg[0] = FAIL
+	endif
+endif
+
+#X_MAX
+if tranFlg[1] != TOUCH
+	if LIMIT_AREA[1][0] > (F_WIDTH-REST)
+		tranFlg[1] = LEACH
+		LIMIT_AREA[1][0] = LIMIT_AREA[1][0] + 1 #移動目標に変更
+	else
+		tranFlg[1] = FAIL
+	endif
+endif
+#Y_MIN
+if tranFlg[2] != TOUCH
+	if LIMIT_AREA[2][1] < REST
+		tranFlg[2] = LEACH
+		LIMIT_AREA[2][1] = LIMIT_AREA[2][1] -1 #移動目標に変更
+	else
+		tranFlg[2] = FAIL
+	endif
+endif
+#Y_MAX
+if tranFlg[3] != TOUCH
+	if LIMIT_AREA[3][1] < (F_HEIGHT-REST)
+		tranFlg[3] = LEACH
+		LIMIT_AREA[3][1] = LIMIT_AREA[3][1] + 1
+	else
+		tranFlg[3] = FAIL
+	endif
+endif
+
+#一番近いエージェントが対応
+#初期化
+i = 0
+k = 0
+while i < 4
+	while k < 6
+		TRANS[i][k] = MIN_POINT
+		TRANS2[i][k] = MIN_POINT
+		k = k + 1
+	endwhile
+	decided[i] = 0
+	k = 0
+	i = i + 1
+endwhile
+
+#大陸横断サーチ1
+k = 0
+while k < 4	
+	costMax = 0
+	if tranFlg[k] == LEACH	#大陸横断補助対応
+		j = 1
+		while j < 4
+			if decided[j] == 1	#もうすでに仕事が決まってるか
+				j = j + 1
+				continue
+			endif
+			cost = calcDistance(pos[TEAM][j],LIMIT_AREA[k])
+			if costMax < cost
+				cost = costMax
+				t_agent = j
+			endif
+			j = j + 1
+		endwhile
+		TRANS[t_agent] = courceDecide(pos[TEAM][t_agent],LIMIT_AREA[k])
+		decided[t_agent] = 1	#他のTranFlgに対応しない
+	endif
+	k = k + 1
+endwhile
+
+k = 0
+while k < 4
+	decided[k] = 0
+	k = k + 1
+endwhile
+
+#大陸横断サーチ2
+k = 0
+while k < 4	
+	costMax = 0
+	if tranFlg2[k] == LEACH	#大陸横断補助対応
+		j = 1
+		while j < 4
+			if decided[j] == 1	#もうすでに仕事が決まってるか
+				j = j + 1
+				continue
+			endif
+			cost = calcDistance(pos[TEAM][j],LIMIT_AREA[k])
+			if costMax < cost
+				cost = costMax
+				t_agent = j
+			endif
+			j = j + 1
+		endwhile
+		TRANS2[t_agent] = courceDecide(pos[TEAM][t_agent],LIMIT_AREA[k])
+		decided[t_agent] = 1	#他のTranFlg2に対応しない
+	endif
+	k = k + 1
+endwhile
+
+endfunc
+
+func searchHexcel(p)
+	local i j tmpPos hexStack stackSize tmpHash
+#########################################
+#大陸横断判定用再帰関数
+#引数 p 判定位置
+#返値 -1 探索終了
+#######################################
+i=0
+j=0
+stackSize = 0
+#再帰カウンタ更新
+RecursionCnt = RecursionCnt + 1
+while i < COURCE_SIZE
+	tmpPos = retHex(p, i)
+	#範囲外か
+	if outOfField(tmpPos) == 1
+		i = i + 1
+		continue
+	endif
+	#自分の所有Hexcelだったら
+	if gb_hexel_owner(tmpPos[0],tmpPos[1]) == TEAM
+		#未チェックか
+		tmpHash = createHash(tmpPos)
+		if tmpHash < 1000
+			if myHexcelMap[tmpHash] == 1 #登録済み
+				i = i + 1
+				continue
+			endif
+		elif tmpHash < 2000
+			if myHexcelMap2[tmpHash-1000] == 1
+				i = i + 1
+				continue
+			endif
+		elif tmpHash < 3000
+			if myHexcelMap3[tmpHash-2000] == 1
+				i = i + 1
+				continue
+			endif
+		elif tmpHash < 4000
+			if myHexcelMap4[tmpHash-3000] == 1
+				i = i + 1
+				continue
+			endif
+		else
+			return -1
+		endif
+		
+		#最大・最小チェック
+		if min_x > tmpPos[0]
+			min_x = tmpPos[0]
+			LIMIT_AREA[0] = tmpPos
+		endif
+		if max_x < tmpPos[0]
+			max_x = tmpPos[0]
+			LIMIT_AREA[1] = tmpPos
+		endif
+		if min_y > tmpPos[1]
+			min_y = tmpPos[1]
+			LIMIT_AREA[2] = tmpPos
+		endif
+		if max_y < tmpPos[1]
+			max_y = tmpPos[1]
+			LIMIT_AREA[3] = tmpPos
+		endif
+		#MAPに追加
+		addHashMap(tmpHash)
+		jTTcounter = jTTcounter + 1
+		#スタックに追加
+		hexStack[stackSize] = tmpPos
+		stackSize = stackSize + 1
+		else
+		i = i + 1
+		continue
+	endif
+	i = i + 1
+endwhile
+
+#再帰呼び出し
+i=stackSize - 1
+while i >= 0
+	#再帰的に呼び出す
+	if RecursionCnt < 80
+		tmp = searchHexcel(hexStack[i])
+	else
+		#再帰深さ制限漏れ対応
+		RecStac[RecStacSize] = hexStack[i]
+		RecStacSize = RecStacSize + 1
+	endif
+	i = i - 1
+endwhile
+	RecursionCnt = RecursionCnt - 1
+	return -1
+endfunc
+
+func dJudgeEnemyDist(agent,dp)
+  local k j i tmpPos preTmpDist tmpSum
+#########################################
+#(b)敵侍との位置判定
+#引数 agentID,方向Posデータ
+#返値 ENE_DIST[agent][k] k:方向
+#MAX_POINT:敵と近づく MIN_POINT:敵に遠ざかる
+#######################################
+k = 0
+while k < COURCE_SIZE
+	tmpPos = dp[k]
+	#フィールド外指定があったとき
+	if (tmpPos[0] == -1) | (tmpPos[1] == -1)
+		k = k + 1
+		continue
+	endif
+	i = 0
+	j = 1
+	tmpSum = 0
+	while i < 4
+		if i == TEAM
+			i = i + 1
+			continue
+		endif
+		while j < 4
+			tmpDist = calcDistance(tmpPos,pos[i][j])
+			preTmpDist = calcDistance(pos[TEAM][agent],pos[i][j])
+			tmpSum = tmpSum + (tmpDist - preTmpDist)
+			j = j + 1
+		endwhile
+		j = 1
+		i = i + 1
+	endwhile
+	if tmpSum > 0 #総合的に遠ざかった
+		ENE_DIST[agent][k] = MIN_POINT
+	else
+		if tmpSum < 0 #総合的に近づいた
+			ENE_DIST[agent][k] = MAX_POINT
+		else
+			ENE_DIST[agent][k] = MIDDLE_POINT
+		endif
+	endif
+	k = k + 1
+endwhile
+endfunc
+
+func dJudgeOwner(agent,dp)
+  local k tmpPos
+#########################################
+#(c)自ノード所有判定
+#引数 agentID,方向Posデータ
+#返値 OWNER[agent][k] k:方向
+#MIN_POINT:自ノード所有でない MAX:所有
+#######################################
+k = 0
+while k < COURCE_SIZE
+	tmpPos = dp[k]
+	#フィールド外指定があったとき
+	if (tmpPos[0] == -1) | (tmpPos[1] == -1)
+		k = k + 1
+		continue
+	endif
+	#自分の所有する土地でないか
+	if gb_hexel_owner(tmpPos[0],tmpPos[1]) != TEAM
+		OWNER[agent][k] = MIN_POINT
+	else
+		OWNER[agent][k] = MAX_POINT
+	endif
+	k = k + 1
+endwhile
+endfunc
+
+
+func dJudgeTop()
+  local k tmp maxTeam minDist minAgent
+#########################################
+#(e)トップチェック
+#引数 なし
+#返値 TOP[agent][k] k:方向
+#######################################
+
+maxTeam = KAM[28]	#敵の中でトップ
+
+#ターゲットの侍の位置で最も近いところへ向かう
+k = 1
+minDist = 999
+while k < 4
+	tmp = calcDistance(pos[TEAM][0],pos[maxTeam][k])
+	if minDist > tmp
+		minDist = tmp
+		minAgent = k
+	endif
+	k = k + 1
+endwhile
+
+
+#方向検索
+tmp = courceDecide(pos[TEAM][0],pos[maxTeam][minAgent])
+TOP[0][tmp] = MAX_POINT
+
+endfunc
+
+
+func dJudgeNeighborEnemy(agent,dp)
+  local k tmpPos enemyCrs enemyEgt enemyHex
+#########################################
+#(f)敵侍との隣接チェック
+#引数 エージェントID,方向データ
+#返値 DOG_NEIGHBOR[agent][k] k:方向
+#######################################
+k = 0
+teamCnt = 0
+enemyCrs = 0
+enemyEgt = 1 #侍エージェントのみチェック
+while k < COURCE_SIZE
+	tmpPos = dp[k]
+	#フィールド外指定があったとき
+	if (tmpPos[0] == -1) | (tmpPos[1] == -1)
+		k = k + 1
+		continue
+	endif
+	teamCnt = 0
+	while teamCnt < 4
+		if teamCnt != TEAM
+			enemyEgt = 1 #侍エージェントのみ実施
+			while enemyEgt < 4 
+				enemyCrs = 0
+				while enemyCrs < COURCE_SIZE
+					enemyHex = retHex(pos[teamCnt][enemyEgt],enemyCrs)
+					if (tmpPos[0] == enemyHex[0]) & (tmpPos[1] == enemyHex[1])
+						DOG_NEIGHBOR[agent][k] = MAX_POINT
+						break
+					endif
+					enemyCrs = enemyCrs + 1
+				endwhile
+				enemyEgt = enemyEgt + 1
+			endwhile
+		endif
+		teamCnt = teamCnt + 1
+	endwhile
+	k = k + 1
+endwhile
+
+endfunc
+
+func randomMove(agnt)
+local index result
+########################################
+#ランダムな移動を行う関数
+#引数:無し
+#返値:0～5 移動場所 -1:凍結状態
+########################################
+  if gb_agent_status(TEAM, agent)
+    result = -1
+  else
+    result = gb_random_value(COURCE_SIZE)
+  endif
+
+#KAMへ前回行動として格納
+index = agent*3+1
+KAM[index] = result	#方向
+if result != -1
+	KAM[index+1] = AgentDP[agent][result][0]
+	KAM[index+2] = AgentDP[agent][result][1]
+else
+	KAM[index+1] = pos[TEAM][agent][0]
+	KAM[index+2] = pos[TEAM][agent][1]
+endif
+
+return result
+endfunc
+
+func decideMoveFase1(agent)
+local k result
+###################################
+#移動場所を決定する関数(フェーズ1)
+#フリーズとフィールド外および競合のみ
+#判定し残りの中で決定
+#引数:エージェントNo
+#返値 移動場所
+###################################
+#フリーズチェック
+if gb_agent_status(TEAM,agent) == 1
+	#KAMへ前回行動として格納
+	index = agent*3+1
+	KAM[index] = -1	#方向
+	return -1 #待機状態
+endif
+
+#競合チェック COMPE
+	judgeNgPos(agent,AgentDP[agent])
+#フィールド外判定 FIELD
+	judgeoutOfField(agent,AgentDP[agent])
+#犬脅し判定 DOG_ODOSHI
+	judgeDogOdoshi(agent,AgentDP[agent])
+#判定
+	k = 0
+	result = -1
+	while k < COURCE_SIZE
+		if(COMPE[agent][k] == MIN_POINT) | (FIELD[agent][k] == MIN_POIN) | (DOG_ODOSHI[agent][k] == MIN_POINT)
+			k = k + 1
+			continue
+		else
+			result = k
+		endif
+		k = k + 1
+	endwhile
+#競合判定に追加
+if result != -1
+	NGPos[NGPosNum] = AgentDP[agent][result]
+	NGPosNum = NGPosNum + 1
+endif
+
+return result
+endfunc
+
+func decideMoveFase2(agent)
+local k result eva max_eva index
+###################################
+#移動場所を決定する関数(フェーズ2)
+#評価関数による判定
+#引数:エージェントNo
+#返値 移動場所
+###################################
+#フリーズチェック
+if gb_agent_status(TEAM,agent) == 1
+	#KAMへ前回行動として格納
+	index = agent*3+1
+	KAM[index] = -1	#方向
+	return -1 #待機状態
+endif
+
+#競合チェック COMPE
+	judgeNgPos(agent,AgentDP[agent])
+#犬脅し回避判定 DOG_AVOID
+	judgeDogAvoid(agent,AgentDP[agent])
+#自分の所有でない土地判定 OWNER
+	judgeOwner(agent,AgentDP[agent])
+#隣接エージェント判定 NEIGHBOR
+	judgeNeighborEnemy(agent,AgentDP[agent])
+#前回の位置に戻らない判定 REPEAT
+	judgeRepeat(agent,AgentDP[agent])
+#包囲チェック2 WRAP2
+	judgeWrap2(agent,AgentDP[agent])
+#敵との相対位置
+	judgeEnemyDist(agent,AgentDP[agent])
+#空いている方向へ COURCE_OWNER
+	judgeCourceOwner(agent,AgentDP[agent])
+#隣接エージェント判定2 NEIGHBOR2
+	judgeNeighborEnemy2(agent,AgentDP[agent])
+#敵陣地までの距離判定 RANGE
+	judgeEnemyOwnerDist(agent,AgentDP[agent])
+#包囲チェック
+	judgeHouiCheck(agent,AgentDP[agent])
+	k = 0
+	result = -1
+	while k < COURCE_SIZE
+		if(COMPE[agent][k] == MIN_POINT) | (FIELD[agent][k] == MIN_POINT) | (DOG_ODOSHI[agent][k] == MIN_POINT) #競合&フィールド&犬脅し判定
+			eva[k] = -1
+			k = k + 1
+			continue
+		else
+			#評価関数
+			eva[k] = (RATIO_B[agent] * DOG_AVOID[agent][k])+(RATIO_C[agent] * OWNER[agent][k]) + (RATIO_H[agent] * ENE_DIST[agent][k]) + (RATIO_I[agent] * COURCE_OWNER[agent][k]) + (RATIO_J[agent] * NEIGHBOR[agent][k]) + (RATIO_K[agent] * REPEAT[agent][k]) + (RATIO_M[agent] * WRAP2[agent][k]) + (RATIO_N[agent] * NEIGHBOR2[agent][k]) + (RATIO_O[agent] * RANGE[agent][k]) + (RATIO_Q[agent] * HOUI[agent][k]) + gb_random_value(3)
+		endif
+		k = k + 1
+	endwhile
+
+#評価値の最大に決定
+k = 0
+max_eva = -2
+
+while k < COURCE_SIZE
+	if max_eva < eva[k]
+		max_eva = eva[k]
+		result = k
+	endif
+	k = k + 1
+endwhile
+
+#競合判定に追加
+if result != -1
+	NGPos[NGPosNum] = AgentDP[agent][result]
+	NGPosNum = NGPosNum + 1
+endif
+
+#KAMへ前回行動として格納
+index = agent*3+1
+KAM[index] = result	#方向
+if result != -1
+	KAM[index+1] = AgentDP[agent][result][0]
+	KAM[index+2] = AgentDP[agent][result][1]
+else
+	KAM[index+1] = pos[TEAM][agent][0]
+	KAM[index+2] = pos[TEAM][agent][1]
+endif
+
+#DEBUG
+if 0
+	print 'Agent'
+	print agent
+	print 'COMPE'
+	print COMPE[agent]
+	print NGPos
+	print 'FIELD'
+	print FIELD[agent]
+	print 'MA_DIST'
+	print MA_DIST[agent]
+	print 'DOG_AVOID'
+	print DOG_AVOID[agent]
+	print 'OWNER'
+	print OWNER[agent]
+	print 'WRAP'
+	print WRAP[agent]
+	print 'SHARE'
+	print SHARE[agent]
+	print 'COURCE_OWNER'
+	print COURCE_OWNER[agent]
+	print 'NEIGHBOR'
+	print NEIGHBOR[agent]
+	print 'REPEAT'
+	print REPEAT[agent]
+	print 'WRAP2'
+	print WRAP2[agent]
+	print 'NEIGHBOR2'
+	print NEIGHBOR2[agent]
+	print 'RANGE'
+	print RANGE[agent]
+	print 'eva'
+	print eva
+	print 'result'
+	print result
+	print AgentDP[agent][result]
+endif
+
+return result
+endfunc
+
+func decideMoveFase3(agent,transAgent)
+local k result eva max_eva index iniHash
+###################################
+#移動場所を決定する関数(フェーズ3)
+#評価関数による判定+大陸横断
+#引数:エージェントNo
+#返値 移動場所
+###################################
+#フリーズチェック
+if gb_agent_status(TEAM,agent) == 1
+	#KAMへ前回行動として格納
+	index = agent*3+1
+	KAM[index] = -1	#方向
+	return -1 #待機状態
+endif
+
+#競合チェック COMPE
+	judgeNgPos(agent,AgentDP[agent])
+#大陸横断チェック
+if TransCheckFlg == 0	#初回のみ実行
+	TransCheckFlg = 1
+	judgeTransTerritory(pos[TEAM][transAgent])
+	if (AREA < 10) #10未満の大陸だったらエージェント変更
+		iniHash = initHashMap()
+		judgeTransTerritory(pos[TEAM][transAgent%3+1])
+	endif
+	if (AREA < 10)
+		iniHash = initHashMap()
+		judgeTransTerritory(pos[TEAM][transAgent%3+2])
+	endif
+endif
+
+	k = 0
+	result = -1
+	while k < COURCE_SIZE
+		if(COMPE[agent][k] == MIN_POINT) | (FIELD[agent][k] == MIN_POINT) | (DOG_ODOSHI[agent][k] == MIN_POINT) #競合&フィールド判定
+			eva[k] = -1
+			k = k + 1
+			continue
+		else
+			#評価関数
+			eva[k] = (RATIO_B[agent] * DOG_AVOID[agent][k])+(RATIO_C[agent] * OWNER[agent][k]) + (RATIO_H[agent] * ENE_DIST[agent][k]) + (RATIO_I[agent] * COURCE_OWNER[agent][k]) +(RATIO_J[agent] * NEIGHBOR[agent][k]) + (RATIO_K[agent] * REPEAT[agent][k]) + (RATIO_M[agent] * WRAP2[agent][k]) + (RATIO_N[agent] * NEIGHBOR2[agent][k]) + (RATIO_L[agent] * TRANS[agent][k])+(RATIO_O[agent] * RANGE[agent][k]) +(RATIO_Q[agent] * HOUI[agent][k]) +(RATIO_R[agent] * TRANS2[agent][k]) + gb_random_value(3)
+		endif
+		k = k + 1
+	
+	endwhile
+
+#評価値の最大に決定
+k = 0
+max_eva = -2
+
+while k < COURCE_SIZE
+	if max_eva < eva[k]
+		max_eva = eva[k]
+		result = k
+	endif
+	k = k + 1
+endwhile
+
+#競合判定に追加
+if result != -1
+	NGPos[NGPosNum] = AgentDP[agent][result]
+	NGPosNum = NGPosNum + 1
+endif
+
+#KAMへ前回行動として格納
+index = agent*3+1
+KAM[index] = result	#方向
+if result != -1
+	KAM[index+1] = AgentDP[agent][result][0]
+	KAM[index+2] = AgentDP[agent][result][1]
+else
+	KAM[index+1] = pos[TEAM][agent][0]
+	KAM[index+2] = pos[TEAM][agent][1]
+endif
+
+
+if 0
+	print 'Agent'
+	print agent
+	print 'COMPE'
+	print COMPE[agent]
+	print NGPos
+	print 'FIELD'
+	print FIELD[agent]
+	print 'DOG_ODOSHI'
+	print DOG_ODOSHI[agent]
+	print 'MA_DIST'
+	print MA_DIST[agent]
+	print 'DOG_AVOID'
+	print DOG_AVOID[agent]
+	print 'OWNER'
+	print OWNER[agent]
+	print 'WRAP'
+	print WRAP[agent]
+	print 'SHARE'
+	print SHARE[agent]
+	print 'COURCE_OWNER'
+	print COURCE_OWNER[agent]
+	print 'NEIGHBOR'
+	print NEIGHBOR[agent]
+	print 'REPEAT'
+	print REPEAT[agent]
+	print 'TRANS'
+	print TRANS[agent]
+	print 'WRAP2'
+	print WRAP2[agent]
+	print 'NEIGHBOR2'
+	print NEIGHBOR2[agent]
+	print 'RANGE'
+	print RANGE[agent]
+	print TRANS2
+	print TRANS2[agent]
+	print 'eva'
+	print eva
+	print 'result'
+	print result
+	print AgentDP[agent][result]
+endif
+
+return result
+endfunc
+
+func decideDogFase(agent)
+local k result eva max_eva index
+###################################
+#犬の移動場所を決定する関数(フェーズ2)
+#評価関数による判定
+#引数:エージェントNo
+#返値 移動場所
+###################################
+#フリーズチェック
+if gb_agent_status(TEAM,agent) == 1
+	return -1 #待機状態
+endif
+#フィールド外判定 FIELD
+	judgeoutOfField(agent,AgentDP[agent])
+#競合チェック COMPE
+	judgeNgPos(agent,AgentDP[agent])
+#自エージェントとの距離判定 MA_DIST
+	judgeMyAgentDist(agent,AgentDP[agent])
+#敵エージェントの距離判定 ENE_DIST
+	dJudgeEnemyDist(agent,AgentDP[agent])
+#所有地判定 OWNER
+	dJudgeOwner(agent,AgentDP[agent])
+#前回の位置に戻らない判定 REPEAT
+	judgeRepeat(agent,AgentDP[agent])
+#敵侍との隣接判定
+	dJudgeNeighborEnemy(agent,AgentDP[agent])
+
+k = 0
+result = -1
+while k < COURCE_SIZE
+	if(COMPE[agent][k] == MIN_POINT) | (FIELD[agent][k] == MIN_POINT) #競合&フィールド判定
+		eva[k] = -1
+		k = k + 1
+		continue
+	else
+		#評価関数
+		eva[k] = (RATIO_a * MA_DIST[agent][k])+(RATIO_b * ENE_DIST[agent][k]) + (RATIO_c * OWNER[agent][k]) + (RATIO_d * REPEAT[agent][k]) + (RATIO_f * DOG_NEIGHBOR[agent][k]) + gb_random_value(3)
+	endif
+	k = k + 1
+endwhile
+
+
+#評価値の最大に決定
+k = 0
+max_eva = -2
+
+while k < COURCE_SIZE
+	if max_eva < eva[k]
+		max_eva = eva[k]
+		result = k
+	endif
+	k = k + 1
+endwhile
+
+#競合判定に追加
+if result != -1
+	NGPos[NGPosNum] = AgentDP[agent][result]
+	NGPosNum = NGPosNum + 1
+endif
+
+#KAMへ前回行動として格納
+index = agent*3+1
+KAM[index] = result	#方向
+if result != -1
+	KAM[index+1] = AgentDP[agent][result][0]
+	KAM[index+2] = AgentDP[agent][result][1]
+else
+	KAM[index+1] = pos[TEAM][agent][0]
+	KAM[index+2] = pos[TEAM][agent][1]
+endif
+
+#DEBUG
+if 0
+	print 'Agent'
+	print agent
+	print 'COMPE'
+	print COMPE[agent]
+	print NGPos
+	print 'FIELD'
+	print FIELD[agent]
+	print 'MA_DIST'
+	print MA_DIST[agent]
+	print 'OWNER'
+	print OWNER[agent]
+	print 'ENE_DIST'
+	print ENE_DIST[agent]
+	print 'eva'
+	print eva
+	print 'result'
+	print result
+	print AgentDP[agent][result]
+endif
+
+return result
+endfunc
+
+func decideDogFase3(agent)
+local k result eva max_eva index
+###################################
+#犬の移動場所を決定する関数(フェーズ3)
+#評価関数による判定
+#引数:エージェントNo
+#返値 移動場所
+###################################
+#フリーズチェック
+if gb_agent_status(TEAM,agent) == 1
+	return -1 #待機状態
+endif
+
+#競合チェック COMPE
+	judgeNgPos(agent,AgentDP[agent])
+#トップチェック
+	dJudgeTop()
+
+k = 0
+result = -1
+while k < COURCE_SIZE
+	if(COMPE[agent][k] == MIN_POINT) | (FIELD[agent][k] == MIN_POINT) #競合&フィールド判定
+		eva[k] = -1
+		k = k + 1
+		continue
+	else
+		#評価関数
+		eva[k] = (RATIO_a * MA_DIST[agent][k])+(RATIO_b * ENE_DIST[agent][k]) + (RATIO_c * OWNER[agent][k]) + (RATIO_d * REPEAT[agent][k]) + (RATIO_e * TOP[agent][k]) + gb_random_value(3)
+	endif
+	k = k + 1
+endwhile
+
+
+#評価値の最大に決定
+k = 0
+max_eva = -2
+
+while k < COURCE_SIZE
+	if max_eva < eva[k]
+		max_eva = eva[k]
+		result = k
+	endif
+	k = k + 1
+endwhile
+
+#競合判定に追加
+if result != -1
+	NGPos[NGPosNum] = AgentDP[agent][result]
+	NGPosNum = NGPosNum + 1
+endif
+
+#KAMへ前回行動として格納
+index = agent*3+1
+KAM[index] = result	#方向
+if result != -1
+	KAM[index+1] = AgentDP[agent][result][0]
+	KAM[index+2] = AgentDP[agent][result][1]
+else
+	KAM[index+1] = pos[TEAM][agent][0]
+	KAM[index+2] = pos[TEAM][agent][1]
+endif
+
+#DEBUG
+if 0
+	print 'Agent'
+	print agent
+	print 'COMPE'
+	print COMPE[agent]
+	print NGPos
+	print 'FIELD'
+	print FIELD[agent]
+	print 'MA_DIST'
+	print MA_DIST[agent]
+	print 'OWNER'
+	print OWNER[agent]
+	print 'ENE_DIST'
+	print ENE_DIST[agent]
+	print 'eva'
+	print eva
+	print 'result'
+	print result
+	print AgentDP[agent][result]
+endif
+
+return result
+endfunc
+
+################################
+#メインルーチン
+################################
+
+#永続RAM
+KAM = gb_storage()
+
+#定数値宣言
+#フィールドサイズ
+F_SIZE = gb_field_size()
+F_WIDTH = F_SIZE[0]
+F_HEIGHT = F_SIZE[1]
+
+#ゲーム定数
+COURCE_SIZE = 6
+
+#評価関数
+MAX_POINT = 10
+MIDDLE_POINT = 5
+MIN_POINT = 0
+
+#グローバル変数
+TURN = gb_remaining_turns()
+TEAM = gb_team_id()
+jTTcounter = 0
+pos = gb_agent_positions()
+
+#KAM処理
+#全体のターン数格納
+if(KAM[0] < TURN)
+	KAM[0] = TURN
+endif
+
+#ゲート取得
+GATES = gb_gate_positions()
+
+#順位と陣地数チェック
+countHexcel()
+
+
+#大陸横断閾値
+TRANS_AGENT_TRADE_CNT = 3	#大陸横断チェックエージェント交代カウント
+TransCheckFlg = 0
+
+#フリーズ時の隣接評価関数の重み(X倍)
+FREEZ_COST = 2
+
+##################
+#侍評価重み
+##################
+#相手の犬脅し回避
+RATIO_B[1] = 1
+RATIO_B[2] = 1
+RATIO_B[3] = 1
+#自分の所有している土地に入らない
+RATIO_C[1] = 6
+RATIO_C[2] = 6
+RATIO_C[3] = 6
+#包囲の可能性のある方向へ
+RATIO_F[1] = 3
+RATIO_F[2] = 3
+RATIO_F[3] = 3
+#敵のいない方角へ
+RATIO_H[1] = 1
+RATIO_H[2] = 1
+RATIO_H[3] = 1
+#相手の土地が無い方角へ
+RATIO_I[1] = 2
+RATIO_I[2] = 2
+RATIO_I[3] = 2
+#隣接するエージェントがいたとき反対方向へ
+RATIO_J[1] = 3
+RATIO_J[2] = 3
+RATIO_J[3] = 3
+#前回と同じ置に戻らない
+RATIO_K[1] = 1
+RATIO_K[2] = 1
+RATIO_K[3] = 1
+#包囲チェック2
+RATIO_M[1] = 2
+RATIO_M[2] = 2
+RATIO_M[3] = 2
+#隣接チェック2
+RATIO_N[1] = 3
+RATIO_N[2] = 3
+RATIO_N[3] = 3
+#敵陣地距離チェック
+RATIO_O[1] = 1
+RATIO_O[2] = 1
+RATIO_O[3] = 1
+#包囲チェック3
+RATIO_Q[1] = 2
+RATIO_Q[2] = 2
+RATIO_Q[3] = 2
+#大陸横断重みづけ
+if KAM[27] == 1	#現在一位の時の重み
+	REST = 3				    #各辺に対して3マス以内なら補助
+	REST2 = 1					#大陸横断リーチの場合の補助マス
+	#大陸横断
+	RATIO_L[1] = 2
+	RATIO_L[2] = 2
+	RATIO_L[3] = 2
+	#大陸横断2
+	RATIO_R[1] = 3
+	RATIO_R[2] = 3
+	RATIO_R[3] = 3
+else
+	REST = 1				    #各辺に対して1マス以内なら補助
+	REST2 = 2					#大陸横断リーチの場合の補助マス
+	#大陸横断
+	RATIO_L[1] = 3
+	RATIO_L[2] = 3
+	RATIO_L[3] = 3
+	#大陸横断2
+	RATIO_R[1] = 1
+	RATIO_R[2] = 1
+	RATIO_R[3] = 1
+endif
+
+##################
+#犬評価重み
+##################
+#自分のエージェントに近づかない
+RATIO_a = 2
+#相手の侍に近づく
+RATIO_b = 3
+#自分の所有している土地を守る
+RATIO_c = 1
+#前回と同じ位置に戻らない
+RATIO_d = 2
+#トップの敵に近づく
+RATIO_e = 3
+#敵の侍と隣接する
+RATIO_f = 5
+
+#方向Posデータ作成
+main_k = 0
+while main_k < COURCE_SIZE
+	AgentDP[0][main_k] = retHexGate(pos[TEAM][0],main_k)
+	AgentDP[1][main_k] = retHexGate(pos[TEAM][1],main_k)
+	AgentDP[2][main_k] = retHexGate(pos[TEAM][2],main_k)
+	AgentDP[3][main_k] = retHexGate(pos[TEAM][3],main_k)
+	main_k = main_k + 1
+endwhile
+
+#犬脅しフィールドデータ作成
+#敵チームA犬データ
+PrvDogPos[0][0] = KAM[31]
+PrvDogPos[0][1] = KAM[32]
+#敵チームB犬データ
+PrvDogPos[1][0] = KAM[33]
+PrvDogPos[1][1] = KAM[34]
+#敵チームC犬データ
+PrvDogPos[2][0] = KAM[35]
+PrvDogPos[2][1] = KAM[36]
+
+main_j = 0
+while main_j < 3
+	main_k = 0
+	while main_k < COURCE_SIZE
+		AgentDOG[main_j][main_k] = retHexGate(PrvDogPos[main_j][0],main_k)
+		main_k = main_k + 1
+	endwhile
+	main_j = main_j + 1
+endwhile
+
+#フリーズデータ作成
+freezCount()
+
+#前々回方向保持
+KAM[19] = KAM[1]
+KAM[20] = KAM[4]
+KAM[21] = KAM[7]
+KAM[22] = KAM[10]
+
+#フリーズ回避
+main_k = 1
+while main_k < 4
+	if (KAM[main_k+15] > 2) & (gb_agent_status(TEAM,main_k) == 0)
+		RATIO_N[main_k] = RATIO_N[main_k] * FREEZ_COST	#隣接重みを重くする
+		KAM[agent+15] = KAM[agent+15] -1
+	endif
+	main_k = main_k + 1
+endwhile
+
+#フェーズ1
+#check フィールド外 予約行動競合
+NGPosNum = 0	#競合カウンタ
+freezCheck()	#フリーズチェック
+moves[1] = decideMoveFase1(1)
+moves[2] = decideMoveFase1(2)
+moves[3] = decideMoveFase1(3)
+moves[0] = randomMove(0)
+gb_move(moves)
+
+#敵チーム犬の位置情報更新
+main_k = 0
+main_j = 0
+while main_k < 4
+	if main_k != TEAM
+		KAM[31+main_j] = pos[main_k][0][0]
+		main_j = main_j + 1
+		KAM[31+main_j] = pos[main_k][0][1]
+		main_j = main_j + 1
+	endif
+	main_k = main_k + 1
+endwhile
+
+
+#フェーズ2
+# 大陸横断、相手の点数判定以外
+NGPosNum = 0	#競合カウンタ
+freezCheck()	#フリーズチェック
+moves[1] = decideMoveFase2(1)
+moves[2] = decideMoveFase2(2)
+moves[3] = decideMoveFase2(3)
+moves[0] = decideDogFase(0)
+gb_move(moves)
+#フェーズ3
+# フェーズ2+大陸横断判定
+NGPosNum = 0 #競合カウンタ
+freezCheck()	#フリーズチェック
+#大陸横断侍チェック
+if KAM[14] > TRANS_AGENT_TRADE_CNT
+	KAM[13] =  (KAM[13]%3)+1
+	transAgent = KAM[13]
+	KAM[14] = 0
+else
+	transAgent = KAM[13]
+	KAM[14] = KAM[14] + 1
+endif
+
+moves[1] = decideMoveFase3(1,transAgent)
+moves[2] = decideMoveFase3(2,transAgent)
+moves[3] = decideMoveFase3(3,transAgent)
+moves[0] = decideDogFase3(0)
+
+
+##############################################
+# Subject:SamurAI Coding 2013 @gunbaiScript
+# Team:ThreeStones
+# Author:Mitsuishi Yuusaku
+# Version 2013/11/24
+############################################## 
+
+#####################
+#永続メモリマップ
+#####################
+#KAM[0]:全体のターン数
+#KAM[1]:犬の前回の方向
+#KAM[2]:犬の前回の位置[x]
+#KAM[3]:犬の前回の位置[y]
+#KAM[4]:侍1の前回の方向
+#KAM[5]:侍1の前回の位置[x]
+#KAM[6]:侍1の前回の位置[y]
+#KAM[7]:侍2の前回の方向
+#KAM[8]:侍2の前回の位置[x]
+#KAM[9]:侍2の前回の位置[y]
+#KAM[10]:侍3の前回の方向
+#KAM[11]:侍3の前回の位置[x]
+#KAM[12]:侍3の前回の位置[y]
+#KAM[13]:大陸横断チェック侍
+#KAM[14]:大陸横断交代カウント
+#KAM[15]:犬のフリーズカウンタ
+#KAM[16]:侍1のフリーズカウンタ
+#KAM[17]:侍2のフリーズカウンタ
+#KAM[18]:侍3のフリーズカウンタ
+#KAM[19]:犬前々回の方向
+#KAM[20]:侍1前々回の方向
+#KAM[21]:侍2前々回の方向
+#KAM[22]:侍3前々回の方向
+#KAM[23]:自分の領地数
+#KAM[24]:相手の領地数A(MAX)
+#KAM[25]:相手の領地数B
+#KAM[26]:相手の領地数C(MIN)
+#KAM[27]:自分の順位
+#KAM[28]:Aのチームindex
+#KAM[29]:Bのチームindex
+#KAM[30]:Cのチームindex
+#KAM[31]:Aの前回犬の位置[x]
+#KAM[32]:Aの前回犬の位置[y]
+#KAM[33]:Bの前回犬の位置[x]
+#KAM[34]:Bの前回犬の位置[y]
+#KAM[35]:Cの前回犬の位置[x]
+#KAM[36]:Cの前回犬の位置[y]
+#####################
